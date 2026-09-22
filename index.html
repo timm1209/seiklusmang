@@ -198,7 +198,7 @@
 
         // --- 2. CLOUDINARY SEADED ---
         const cloudName = 'x1dmqyw4'; 
-        const uploadPreset = 'seiklusmang_pildid'; // TÄHELEPANU: Asenda oma preseti nimega!
+        const uploadPreset = 'seiklusmang_pildid'; // TÄHELEPANU: Asenda oma preseti nimega, kui see on muutunud!
 
         // --- 3. UI ELEMENTIDE VIITED ---
         const screens = {
@@ -306,13 +306,21 @@
                 const li = document.createElement('li');
                 li.className = "flex justify-between items-center bg-white p-3 rounded-xl border border-gray-200 shadow-sm";
                 li.innerHTML = `
-                    <div class="pr-2">
+                    <div class="pr-2 flex-1">
                         <strong class="text-gray-800 block text-sm">${index + 1}. ${task.title}</strong>
                         <span class="text-xs text-gray-500 line-clamp-1">${task.desc}</span>
                     </div>
-                    <button onclick="deleteTask(${index})" class="text-red-500 hover:text-red-600 p-2 rounded-lg hover:bg-red-50 transition-colors">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="moveTaskUp(${index})" class="text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-gray-100 transition-colors ${index === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === 0 ? 'disabled' : ''}>
+                            <i class="fa-solid fa-chevron-up"></i>
+                        </button>
+                        <button onclick="moveTaskDown(${index})" class="text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-gray-100 transition-colors ${index === tasks.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${index === tasks.length - 1 ? 'disabled' : ''}>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <button onclick="deleteTask(${index})" class="text-red-500 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors ml-2">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
                 `;
                 uiAdminTaskList.appendChild(li);
             });
@@ -343,6 +351,27 @@
             tasks.splice(index, 1);
             saveTasksToStorage();
             renderAdminTasks();
+        }
+
+        // UUED FUNKTSIOONID JÄRJEKORRA MUUTMISEKS
+        function moveTaskUp(index) {
+            if (index > 0) {
+                const temp = tasks[index];
+                tasks[index] = tasks[index - 1];
+                tasks[index - 1] = temp;
+                saveTasksToStorage();
+                renderAdminTasks();
+            }
+        }
+
+        function moveTaskDown(index) {
+            if (index < tasks.length - 1) {
+                const temp = tasks[index];
+                tasks[index] = tasks[index + 1];
+                tasks[index + 1] = temp;
+                saveTasksToStorage();
+                renderAdminTasks();
+            }
         }
 
         // --- 6. MÄNGU LOOGIKA ---
